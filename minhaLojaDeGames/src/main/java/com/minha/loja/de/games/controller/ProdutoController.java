@@ -5,12 +5,14 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.minha.loja.de.games.model.ProdutoModel;
@@ -18,44 +20,43 @@ import com.minha.loja.de.games.repository.ProdutoRepository;
 
 
 @RestController
+@RequestMapping("/produtos")
+@CrossOrigin("*")
 public class ProdutoController {
 
 	// ela faz uniao/injecao do jpa, é obrigatorio
 	@Autowired
 	private ProdutoRepository repository;
 
-	// puxa do banco de dados
-	@GetMapping("/produtos")
-	public List<ProdutoModel> pegarTodos() {
-		
-		//achar tudo dentro do repository
-		return repository.findAllProdutoModel();
+	@GetMapping
+	public ResponseEntity<List<ProdutoModel>> GetAll() {
+		return ResponseEntity.ok(repository.findAll());
 	}
 	//requerer a respostas
-	@PostMapping("/produtos")
+	@PostMapping
 	public ProdutoModel criar (@RequestBody ProdutoModel model) {
 		repository.save(model);
 		return model;
 	}
 
-	@GetMapping ("/produtos/id/{id}")
-	public Optional<ProdutoModel> buscarPorNome(@PathVariable Long id){
-		return repository.findById(id);
+	@GetMapping("/{id}")
+	public ResponseEntity<ProdutoModel> GetById(@PathVariable long idProduto) {
+		return repository.findById(idProduto).map(resp -> ResponseEntity.ok(resp)).orElse(ResponseEntity.notFound().build());
 	}
-	@GetMapping ("/produtos/nome/{nome}")
-	public ResponseEntity<List<ProdutoModel>> buscarPorDescricao(@PathVariable String nome){
-		return ResponseEntity.ok(repository.findAllByDescricaoContainingIgnoreCase(nome));
+	@GetMapping ("produtos/{titulo}")
+	public ResponseEntity<List<ProdutoModel>> buscarPorTitulo(@PathVariable String titulo){
+		return ResponseEntity.ok(repository.findAllByTituloContainingIgnoreCase(titulo));
 	}
-	@PutMapping("/categorias/{id}")
-	public ProdutoModel atualizar (@PathVariable Long id, @RequestBody ProdutoModel model) {
-		model.setId(id);
+	@PutMapping("/{idProduto}")
+	public ProdutoModel atualizar (@PathVariable Long idProduto, @RequestBody ProdutoModel model) {
+		model.setId(idProduto);
 		repository.save(model);
 		return model;
 	}
 	
-	@DeleteMapping("/categorias/{id}")
-	public String remover(@PathVariable Long id) {	
-		repository.deleteById(id);
+	@DeleteMapping("/{idProduto}")
+	public String remover(@PathVariable Long idProduto) {	
+		repository.deleteById(idProduto);
 	return "sucesso";
 	}
 

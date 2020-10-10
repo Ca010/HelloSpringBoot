@@ -1,14 +1,11 @@
 package com.minha.loja.de.games.model;
 
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -17,27 +14,23 @@ public class ProdutoModel {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id_produto;
-	
+	private Long idProduto;
+
 	@Column
 	private String genero;
-	
+
 	@Column
 	private float preco;
-	
+
 	@Column
-	private String nome_jogo;
-	
-	@OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL)//mappedBy; qual tabela estamos mapeando
-	@JsonIgnoreProperties("categoria")
-	private List<CategoriaModel> categoria;
+	private String titulo;
 
-	public Long getId_produto() {
-		return id_produto;
-	}
+	@ManyToOne//puxa somente uma classe e nao uma lista
+	@JsonIgnoreProperties("produtos")//nao ter loop
+	private CategoriaModel categoria;
 
-	public void setId_produto(Long id_produto) {
-		this.id_produto = id_produto;
+	public Long getIdProduto() {
+		return idProduto;
 	}
 
 	public String getGenero() {
@@ -56,18 +49,29 @@ public class ProdutoModel {
 		this.preco = preco;
 	}
 
-	public String getNome_jogo() {
-		return nome_jogo;
+	public String getTitulo() {
+		return titulo;
 	}
 
-	public void setNome_jogo(String nome_jogo) {
-		this.nome_jogo = nome_jogo;
+	public void setTitulo(String titulo) {
+		this.titulo = titulo;
+	}
+
+	public CategoriaModel getCategoria() {
+		return categoria;
+	}
+
+	public void setCategoria(CategoriaModel categoria) {
+		this.categoria = categoria;
+	}
+
+	public void setIdProduto(Long idProduto) {
+		this.idProduto = idProduto;
 	}
 
 	public void setId(Long id) {
 		// TODO Auto-generated method stub
 		
 	}
-	
-	
+
 }
